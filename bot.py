@@ -49,5 +49,5 @@ try:
     
 except Exception as e:
     print(f"FATAL: {e}",flush=True)
-    trackback.print_exc()
+    traceback.print_exc()
     sys.exit(1)
