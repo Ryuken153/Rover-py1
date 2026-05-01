@@ -1,3 +1,5 @@
+import sys, trackback
+sys.stderr= sys.stdout
 import discord
 from discord.ext import commands
 import random
@@ -34,12 +36,15 @@ async def ping(ctx: commands.Context):
     roundtrip = round((msg.created_at - ctx.message.created_at).total_seconds() * 1000)
     await msg.edit(content=f"🏓 Pong! Latency: **{roundtrip}ms** | API: **{latency}ms**")
 
-
-# ── !hello ────────────────────────────────────────────────────────────────────
 @bot.command()
 async def hello(ctx: commands.Context):
     """Say hello to the bot."""
     await ctx.reply(f"👋 Hello, **{ctx.author.display_name}**! Welcome to the server!")
 
-keep_alive()
-bot.run(os.getenv("DISCORD_TOKEN"))
+try:
+    keep_alive()
+    bot.run(os.getenv("DISCORD_TOKEN"))
+except Exception as e:
+    print(f"FATAL: {e}",flush=True)
+    trackback.print_exc()
+    sys.exit(1)
