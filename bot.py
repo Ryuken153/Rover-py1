@@ -1,4 +1,4 @@
-import sys, trackback
+import sys, traceback
 sys.stderr= sys.stdout
 import discord
 from discord.ext import commands
