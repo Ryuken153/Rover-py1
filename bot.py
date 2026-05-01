@@ -1,5 +1,5 @@
 import discord
-from discord.exeimport commands
+from discord.ext import commands
 import random
 import os
 from dotenv import  load_dotenv
