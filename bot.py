@@ -7,12 +7,12 @@ from keep_alive import keep_alive
 
 load_dotenv()
 
-intents = discord.intents.default()
+intents = discord.Intents.default()
 intents.message_content = True
-intents.member = True
+intents.members = True
 intents.guilds = True
 
-bot = commands.bot(command_prefix="!",  intents=intents, help_command=None)
+bot = commands.Bot(command_prefix="!",  intents=intents, help_command=None)
 
 @bot.event
 async def on_ready ():
@@ -20,7 +20,7 @@ async def on_ready ():
     await bot.change_presence(activity=discord.Game(name="!help for commands"))
 
 @bot.event
-async def  on_member_join(member: discord.member):
+async def  on_member_join(member: discord.Member):
     if member.guild.system_channel:
         await member.guild.system_channel.send(
             f"Welcome to **{member.guild.name}, {member.mention}! enjoy your stay" 
@@ -42,4 +42,4 @@ async def hello(ctx: commands.Context):
     await ctx.reply(f"👋 Hello, **{ctx.author.display_name}**! Welcome to the server!")
 
 keep_alive()
-bot.run(os.getenv(discord_token))
+bot.run(os.getenv("DISCORD_TOKEN"))
