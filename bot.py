@@ -43,7 +43,10 @@ async def hello(ctx: commands.Context):
 
 try:
     keep_alive()
-    bot.run(os.getenv("DISCORD_TOKEN"))
+    token = os.getenv("DISCORD_TOKEN"))
+    print(f"Token loaded: {'YES' if token else 'NO - TOKEN IS MISSING'}", flush=True)
+    bot.run(token)
+    
 except Exception as e:
     print(f"FATAL: {e}",flush=True)
     trackback.print_exc()
