@@ -17,30 +17,19 @@ intents.guilds = True
 
 bot = commands.Bot(command_prefix="!",  intents=intents, help_command=None)
 
-@bot.event
-async def on_ready ():
-    print(f"logged in as {bot.user}(ID: {bot.user.id})")
-    await bot.change_presence(activity=discord.Game(name="!help for commands"))
-
-@bot.event
-async def  on_member_join(member: discord.Member):
-    if member.guild.system_channel:
-        await member.guild.system_channel.send(
-            f"Welcome to **{member.guild.name}, {member.mention}! enjoy your stay" 
-        )
-
-@bot.command()
-async def ping(ctx: commands.Context):
-    """Check bot latency."""
-    latency = round(bot.latency * 1000)
-    msg = await ctx.reply("Pinging...")
-    roundtrip = round((msg.created_at - ctx.message.created_at).total_seconds() * 1000)
-    await msg.edit(content=f"🏓 Pong! Latency: **{roundtrip}ms** | API: **{latency}ms**")
-
-@bot.command()
-async def hello(ctx: commands.Context):
-    """Say hello to the bot."""
-    await ctx.reply(f"👋 Hello, **{ctx.author.display_name}**! Welcome to the server!")
+async def load_extensions():
+    folders = ["commands", "events"]
+    for folder in folders:
+        if not os.path.isdir(folder):
+            continue
+        for filename in os.listdir(folder):
+            if filename.endswith(".py") and not filename.startswith("_"):
+                ext = f"{folder}.{filename[:-3]}"
+                try:
+                    await bot.load_extension(ext)
+                    print(f" Loaded: {ext}")
+                except Exception as e:
+                    print(f"Faild to load {ext}: {e}")
 
 try:
     keep_alive()
