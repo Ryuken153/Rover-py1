@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-import random
 
 def check_winner(board):
     lines = [
@@ -15,36 +14,54 @@ def check_winner(board):
         return "draw", []
     return None, []
 
+def minimax(board, is_maximizing, alpha=-float("inf"), beta=float("inf")):
+    """Minimax with alpha-beta pruning. Bot=2 (maximizing), Player=1 (minimizing)."""
+    winner, _ = check_winner(board)
+    if winner == 2:
+        return 10
+    if winner == 1:
+        return -10
+    if winner == "draw":
+        return 0
+
+    if is_maximizing:
+        best = -float("inf")
+        for i in range(9):
+            if board[i] == 0:
+                board[i] = 2
+                score = minimax(board, False, alpha, beta)
+                board[i] = 0
+                best = max(best, score)
+                alpha = max(alpha, best)
+                if beta <= alpha:
+                    break
+        return best
+    else:
+        best = float("inf")
+        for i in range(9):
+            if board[i] == 0:
+                board[i] = 1
+                score = minimax(board, True, alpha, beta)
+                board[i] = 0
+                best = min(best, score)
+                beta = min(beta, best)
+                if beta <= alpha:
+                    break
+        return best
+
 def bot_move(board):
-    # Try to win
+    """Returns the best possible move index using Minimax + alpha-beta pruning."""
+    best_score = -float("inf")
+    best_move = None
     for i in range(9):
         if board[i] == 0:
             board[i] = 2
-            winner, _ = check_winner(board)
-            if winner == 2:
-                board[i] = 0
-                return i
+            score = minimax(board, False)
             board[i] = 0
-    # Block player
-    for i in range(9):
-        if board[i] == 0:
-            board[i] = 1
-            winner, _ = check_winner(board)
-            if winner == 1:
-                board[i] = 0
-                return i
-            board[i] = 0
-    # Take center
-    if board[4] == 0:
-        return 4
-    # Take corners
-    corners = [0, 2, 6, 8]
-    empty_corners = [c for c in corners if board[c] == 0]
-    if empty_corners:
-        return random.choice(empty_corners)
-    # Take any
-    empty = [i for i in range(9) if board[i] == 0]
-    return random.choice(empty) if empty else None
+            if score > best_score:
+                best_score = score
+                best_move = i
+    return best_move
 
 class TicTacToeButton(discord.ui.Button):
     def __init__(self, index):
@@ -65,7 +82,6 @@ class TicTacToeButton(discord.ui.Button):
         self.disabled = True
 
         winner, winning_line = check_winner(view.board)
-
         if winner:
             await view.finish(interaction, winner, winning_line)
             return
@@ -87,7 +103,6 @@ class TicTacToeButton(discord.ui.Button):
 
             await view.update(interaction)
         else:
-            # Switch turns
             view.current_player = view.player2 if view.current_player == view.player1 else view.player1
             await view.update(interaction)
 
@@ -105,53 +120,38 @@ class TicTacToeView(discord.ui.View):
         for i in range(9):
             self.add_item(TicTacToeButton(i))
 
-    def build_embed(self, title, color):
-        if self.vs_bot:
-            desc = f"**{self.player1.display_name}** ✖️  vs  ⭕ **Bot**"
-        else:
-            desc = f"**{self.player1.display_name}** ✖️  vs  ⭕ **{self.player2.display_name}**"
-        embed = discord.Embed(title=title, description=desc, color=color)
-        if not any(btn.label != "\u200b" for btn in self.children):
-            embed.add_field(name="Turn", value=f"➡️ {self.current_player.mention} ✖️", inline=False)
-        else:
-            embed.add_field(name="Turn", value=f"➡️ {self.current_player.mention}", inline=False)
-        return embed
-
     async def update(self, interaction):
         symbol = "✖️" if self.current_player == self.player1 else "⭕"
         embed = discord.Embed(
             title="🎮 Tic Tac Toe",
-            description=f"{'**Bot**' if self.vs_bot and self.current_player != self.player1 else self.current_player.mention}'s turn {symbol}",
+            description=f"{self.current_player.mention}'s turn {symbol}",
             color=discord.Color.blurple()
         )
         if self.vs_bot:
-            embed.set_footer(text=f"{self.player1.display_name} ✖️  vs  ⭕ Bot")
+            embed.set_footer(text=f"{self.player1.display_name} ✖️  vs  ⭕ Bot [Minimax AI]")
         else:
             embed.set_footer(text=f"{self.player1.display_name} ✖️  vs  ⭕ {self.player2.display_name}")
         await interaction.response.edit_message(embed=embed, view=self)
 
     async def finish(self, interaction, winner, winning_line):
-        # Highlight winning line
         for i in winning_line:
             self.children[i].style = discord.ButtonStyle.green
-
-        # Disable all buttons
         for btn in self.children:
             btn.disabled = True
 
         if winner == "draw":
             title = "🤝 It's a Draw!"
             color = discord.Color.yellow()
-            desc = "No one wins this time!"
+            desc = "The bot's Minimax AI couldn't be beaten, but neither could you!"
         elif winner == 1:
             title = f"🏆 {self.player1.display_name} Wins!"
             color = discord.Color.green()
-            desc = f"{self.player1.mention} ✖️ wins the game!"
+            desc = f"{self.player1.mention} ✖️ beat the Minimax AI! Impressive!"
         else:
             if self.vs_bot:
                 title = "🤖 Bot Wins!"
                 color = discord.Color.red()
-                desc = "Better luck next time!"
+                desc = "The Minimax AI is unbeatable. Better luck next time!"
             else:
                 title = f"🏆 {self.player2.display_name} Wins!"
                 color = discord.Color.green()
@@ -159,7 +159,7 @@ class TicTacToeView(discord.ui.View):
 
         embed = discord.Embed(title=title, description=desc, color=color)
         if self.vs_bot:
-            embed.set_footer(text=f"{self.player1.display_name} ✖️  vs  ⭕ Bot")
+            embed.set_footer(text=f"{self.player1.display_name} ✖️  vs  ⭕ Bot [Minimax AI]")
         else:
             embed.set_footer(text=f"{self.player1.display_name} ✖️  vs  ⭕ {self.player2.display_name}")
         await interaction.response.edit_message(embed=embed, view=self)
@@ -177,26 +177,22 @@ class TicTacToe(commands.Cog):
     async def tictactoe(self, ctx, opponent: discord.Member = None):
         """Play Tic Tac Toe! Use !tictactoe @user or !tictactoe to play vs bot."""
 
-        # Play vs bot
         if opponent is None:
             view = TicTacToeView(ctx.author, None, vs_bot=True)
             embed = discord.Embed(
                 title="🎮 Tic Tac Toe",
-                description=f"{ctx.author.mention}'s turn ✖️",
+                description=f"{ctx.author.mention}'s turn ✖️\n\n⚠️ You're playing against **Minimax AI** — it never loses!",
                 color=discord.Color.blurple()
             )
-            embed.set_footer(text=f"{ctx.author.display_name} ✖️  vs  ⭕ Bot")
+            embed.set_footer(text=f"{ctx.author.display_name} ✖️  vs  ⭕ Bot [Minimax AI]")
             return await ctx.reply(embed=embed, view=view)
 
-        # Can't play yourself
         if opponent.id == ctx.author.id:
             return await ctx.reply("❌ You can't play against yourself!")
 
-        # Can't play bots
         if opponent.bot:
             return await ctx.reply("❌ You can't challenge a bot! Use `!tictactoe` without mentioning anyone to play vs me.")
 
-        # Challenge embed with accept/decline
         embed = discord.Embed(
             title="🎮 Tic Tac Toe Challenge!",
             description=f"{ctx.author.mention} has challenged {opponent.mention} to a game!\n\n{opponent.mention} do you accept?",
