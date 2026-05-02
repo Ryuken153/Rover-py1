@@ -6,14 +6,14 @@ class Prefix(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(aliases=["set"])
     @commands.has_permissions(manage_guild=True)
     async def setprefix(self, ctx: commands.Context, new_prefix: str):
         """Set a single prefix, replacing all existing ones."""
         await set_prefix(ctx.guild.id, new_prefix)
         await ctx.reply(f"Prefix set to `{new_prefix}`")
 
-    @commands.command()
+    @commands.command(aliases=["addp"])
     @commands.has_permissions(manage_guild=True)
     async def addprefix(self, ctx: commands.Context, new_prefix: str):
         """Add a prefix without removing existing ones."""
@@ -21,7 +21,7 @@ class Prefix(commands.Cog):
         formatted = " ".join(f"`{p}`" for p in prefixes)
         await ctx.reply(f"Added `{new_prefix}`. Active prefixes: {formatted}")
 
-    @commands.command()
+    @commands.command(aliases=["removep"])
     @commands.has_permissions(manage_guild=True)
     async def removeprefix(self, ctx: commands.Context, prefix: str):
         """Remove a specific prefix."""
