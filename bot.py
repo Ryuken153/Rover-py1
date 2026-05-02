@@ -6,7 +6,7 @@ import os
 import asyncio
 from dotenv import load_dotenv
 from keep_alive import keep_alive
-from db import get_prefixes
+from db import get_prefixes, get_guild
 
 load_dotenv()
 
@@ -14,18 +14,29 @@ async def get_prefix(bot, message):
     if not message.guild:
         return "!"
     prefixes = await get_prefixes(message.guild.id)
-    return prefixes
+    return prefixes if prefixes else "!"
 
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 intents.guilds = True
 
-bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
+bot = commands.Bot(command_prefix=get_prefix, intents=intents, help_command=None)
+
+@bot.event
+async def on_ready():
+    print(f"Logged in as {bot.user}", flush=True)
+    for guild in bot.guilds:
+        await get_guild(guild.id)
+        print(f"Registered guild: {guild.name}", flush=True)
+
+@bot.event
+async def on_guild_join(guild):
+    await get_guild(guild.id)
+    print(f"Joined guild: {guild.name} | ID: {guild.id}", flush=True)
 
 @bot.event
 async def on_message(message):
-    print(f"MSG: {message.content} | Author: {message.author} | Guild: {message.guild}", flush=True)
     if message.author.bot:
         return
     await bot.process_commands(message)
