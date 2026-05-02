@@ -13,7 +13,7 @@ class Avatar(commands.Cog):
       embed.set_image(url=member.display.avatar.url)
       embed.set_footer(text= f"Requested by {ctx.author.display_name}")
    
-  await ctx.reply(embed=embed)
+      await ctx.reply(embed=embed)
 
 async def setup(bot):
   await bot.add_cog(Avatar(bot))
