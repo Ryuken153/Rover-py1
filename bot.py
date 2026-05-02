@@ -7,8 +7,13 @@ import os
 from dotenv import  load_dotenv
 from keep_alive import keep_alive
 from utils import get_intents
+from db import get_prefixes
 
 load_dotenv()
+
+async def get_prefix(bot, message):
+    prefixes = await get_prefixes(message.guild.id)
+    return prefixes
 
 intents = discord.Intents.default()
 intents.message_content = True
