@@ -48,17 +48,23 @@ class Music(commands.Cog):
     async def cog_load(self):
         """Connect to Lavalink nodes when the cog loads."""
         nodes = [
-            # Primary node
+            # Primary — 179 days uptime, 99.91%
             wavelink.Node(
-                uri="https://lavalinkv4.serenetia.com",
-                password="https://dsc.gg/ajidevserver",
+                uri="http://lavalink.jirayu.net:13592",
+                password="youshallnotpass",
                 identifier="PRIMARY",
             ),
-            # Backup node
+            # Backup
             wavelink.Node(
-                uri="https://lavalink.nextgencoders.xyz",
-                password="nextgencoderspvt",
+                uri="http://n3.nexcloud.in:2026",
+                password="nexcloud",
                 identifier="BACKUP",
+            ),
+            # Backup 2
+            wavelink.Node(
+                uri="http://omega.vexanode.cloud:2031",
+                password="https://discord.vexanode.cloud",
+                identifier="BACKUP2",
             ),
         ]
         await wavelink.Pool.connect(nodes=nodes, client=self.bot, cache_capacity=100)
