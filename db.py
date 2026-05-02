@@ -48,14 +48,14 @@ async def remove_prefix(guild_id: int, prefix: str) -> list:
 # Reminders----------------------------------------------------------------------------------------------------------
 reminders_col= db["reminders"]
 
-async def add_reminde(user_id: int, channel_id: int, reminder: str, remind_at: float):
+async def add_reminder(user_id: int, channel_id: int, reminder: str, remind_at: float):
     result = await reminders_col.insert_one({
         "user_id": user_id,
         "channel_id": channel_id,
         "reminder": reminder,
         "remind_at": remind_at
     })
-return result.insert_id
+    return result.inserted_id
 
 async def get_user_reminders(user_id: int):
     return await reminders_col.find({"user_id": user_id}).to_list(None)
@@ -64,6 +64,5 @@ async def get_all_reminders():
     return await reminders_col.find().to_list(None)
 
 async def delete_reminder(reminder_id):
-    await reminders_col.delete_one({"_id": reminder_id"})
-
+    await reminders_col.delete_one({"_id": reminder_id})
 
