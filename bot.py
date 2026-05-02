@@ -6,6 +6,7 @@ import random
 import os
 from dotenv import  load_dotenv
 from keep_alive import keep_alive
+from utils import get_intents
 
 load_dotenv()
 
