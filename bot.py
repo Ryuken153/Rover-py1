@@ -25,6 +25,7 @@ bot = commands.Bot(command_prefix=get_prefix, intents=intents, help_command=None
 
 @bot.event
 async def on_message(message):
+    print(f"MSG: {message.content} | Author: {message.author} | Guild: {message.guild}", flush=True)
     if message.author.bot:
         return
     await bot.process_commands(message)
