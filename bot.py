@@ -26,6 +26,7 @@ bot = commands.Bot(command_prefix=get_prefix, intents=intents, help_command=None
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user}", flush=True)
+    print(f"Guilds: {[g.name for g in bot.guilds]}", flush=True)
     for guild in bot.guilds:
         await get_guild(guild.id)
         print(f"Registered guild: {guild.name}", flush=True)
@@ -37,6 +38,7 @@ async def on_guild_join(guild):
 
 @bot.event
 async def on_message(message):
+    print(f"MSG: {message.content} | Author: {message.author} | Guild: {message.guild}", flush=True)
     if message.author.bot:
         return
     await bot.process_commands(message)
