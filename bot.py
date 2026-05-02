@@ -10,10 +10,9 @@ from db import get_prefixes
 
 load_dotenv()
 
-print(f"MONGO_URI loaded: {'YES' if os.getenv('MONGO_URI') else 'NO - MISSING'}", flush=True)
-print(f"DISCORD_TOKEN loaded: {'YES' if os.getenv('DISCORD_TOKEN') else 'NO - MISSING'}", flush=True)
-
 async def get_prefix(bot, message):
+    if not message.guild:
+        return "!"
     prefixes = await get_prefixes(message.guild.id)
     return prefixes
 
@@ -23,6 +22,12 @@ intents.members = True
 intents.guilds = True
 
 bot = commands.Bot(command_prefix=get_prefix, intents=intents, help_command=None)
+
+@bot.event
+async def on_message(message):
+    if message.author.bot:
+        return
+    await bot.process_commands(message)
 
 async def load_extensions():
     folders = ["commands", "events"]
