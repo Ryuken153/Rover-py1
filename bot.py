@@ -3,6 +3,7 @@ sys.stderr = sys.stdout
 import discord
 from discord.ext import commands
 import os
+import asyncio
 from dotenv import load_dotenv
 from keep_alive import keep_alive
 from db import get_prefixes
@@ -20,8 +21,7 @@ intents.guilds = True
 
 bot = commands.Bot(command_prefix=get_prefix, intents=intents, help_command=None)
 
-@bot.event
-async def setup_hook():
+async def load_extensions():
     folders = ["commands", "events"]
     for folder in folders:
         if not os.path.isdir(folder):
@@ -35,11 +35,16 @@ async def setup_hook():
                 except Exception as e:
                     print(f"Failed to load {ext}: {e}")
 
+async def main():
+    async with bot:
+        await load_extensions()
+        token = os.getenv("DISCORD_TOKEN")
+        print(f"Token loaded: {'YES' if token else 'NO - TOKEN IS MISSING'}", flush=True)
+        await bot.start(token)
+
 try:
     keep_alive()
-    token = os.getenv("DISCORD_TOKEN")
-    print(f"Token loaded: {'YES' if token else 'NO - TOKEN IS MISSING'}", flush=True)
-    bot.run(token)
+    asyncio.run(main())
 
 except Exception as e:
     print(f"FATAL: {e}", flush=True)
