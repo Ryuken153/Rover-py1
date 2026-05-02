@@ -3,6 +3,48 @@ from discord.ext import commands
 from functools import wraps
 
 
+# ── Intents Presets ──────────────────────────────────────────────────────────
+
+def get_intents(preset: str = "default") -> discord.Intents:
+    """
+    Returns a configured Intents object based on preset.
+
+    Presets:
+        "default"    → messages + guilds + members (recommended for most bots)
+        "minimal"    → guilds only (read-only, no member/message events)
+        "moderation" → default + bans + dm messages
+        "full"       → everything enabled (requires verification for large bots)
+
+    Usage:
+        from utils import get_intents
+        bot = commands.Bot(command_prefix="!", intents=get_intents("default"))
+    """
+    if preset == "minimal":
+        intents = discord.Intents.default()
+        return intents
+
+    if preset == "default":
+        intents = discord.Intents.default()
+        intents.message_content = True
+        intents.members = True
+        intents.guilds = True
+        return intents
+
+    if preset == "moderation":
+        intents = discord.Intents.default()
+        intents.message_content = True
+        intents.members = True
+        intents.guilds = True
+        intents.bans = True
+        intents.dm_messages = True
+        return intents
+
+    if preset == "full":
+        return discord.Intents.all()
+
+    raise ValueError(f"Unknown preset: '{preset}'. Choose: minimal, default, moderation, full")
+
+
 # ── Custom Exceptions ────────────────────────────────────────────────────────
 
 class NotServerOwner(commands.CheckFailure):
