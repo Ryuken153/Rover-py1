@@ -1,16 +1,16 @@
-from discord.ext import commands 
+from discord.ext import commands
 
 class Ping(commands.Cog):
-  def __init__(self, bot):
-    self.bot = bot
+    def __init__(self, bot):
+        self.bot = bot
 
-    @commands.command(aliases=["ping"])
+    @commands.command()
     async def ping(self, ctx: commands.Context):
-      """Check bot latency."""
-      latency = round(self.bot.latency * 1000)
-      msg = await ctx.reply("Pinging...")
-      roundtrip = round((msg.created_at - ctx.message.created_at).total_seconds() * 1000)
-      await msg.edit(content = f"🏓 Pong! Latency: **{roundtrip}ms** | API: **{latency}ms**")
+        """Check bot latency."""
+        latency = round(self.bot.latency * 1000)
+        msg = await ctx.reply("Pinging...")
+        roundtrip = round((msg.created_at - ctx.message.created_at).total_seconds() * 1000)
+        await msg.edit(content=f"🏓 Pong! Latency: **{roundtrip}ms** | API: **{latency}ms**")
 
 async def setup(bot):
-  await bot.add_cog(Ping(bot))
+    await bot.add_cog(Ping(bot))
