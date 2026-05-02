@@ -1,11 +1,11 @@
 import discord
-from discord.ctx import commands
+from discord.etx import commands
 
 class Avatar(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
 
-@commands.command(aliases["av")
+@commands.command(aliases=["av"]+)
 async def Avatar(self, ctx: commands.Context, member: discord.Member = None):
   member = member or ctx.author
 
