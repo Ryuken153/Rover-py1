@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from datetime import timedelta
-from utils import can_action_kick, can_kick, can_ban,  can_mute, can_manage_message
+from utils import can_action_member, can_kick, can_ban,  can_mute, can_manage_message
 
 def mod_embed(title: str, description: str, color: deiscord.Color.orange()) -> discord.Embed:
   return discord.Embed(title=title, description=discription, color=color)
@@ -17,7 +17,7 @@ class Moderation(commands.Cog):
       return await ctx.send(embed=mod_embed("No permission", "you need a authority called **Kick members**."))
     if member == ctx.author:
       return await ctx.send(embed=mod_embed("Error", "you cannot kick yourself baka ~~~"))
-    if not can_action_kick(ctx.author, member):
+    if not can_action_member(ctx.author, member):
       return await ctx.send(embed=mod_embed("Error", "you cannot kick someone equal oe higher authority"))
 
     await member.kick(reason=reason)
