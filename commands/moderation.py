@@ -18,7 +18,7 @@ class Moderation(commands.Cog):
     if member == ctx.author:
       return await ctx.send(embed=mod_embed("Error", "you cannot kick yourself baka ~~~"))
     if not can_action_kick(ctx.author, member):
-      return await ctx.send(embed=mod_embed("Error", "you cannot kick someone equal oe higher authority")
+      return await ctx.send(embed=mod_embed("Error", "you cannot kick someone equal oe higher authority"))
 
     await member.kick(reason=reason)
     await ctx.send(embed=mod_embed(
