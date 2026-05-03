@@ -11,7 +11,7 @@ class Moderation(commands.Cog):
     self.bot = bot
 
   @commands.command()
-  @commands.bot_has_permissions(Kick_members=True)
+  @commands.bot_has_permissions(kick_members=True)
   async def kick(self, ctx, member: discord.Member, *, reason: str = "No reason provided"):
     if not can_kick(ctx.author):
       return await ctx.send(embed=mod_embed("No permission", "you need a authority called **Kick members**."))
