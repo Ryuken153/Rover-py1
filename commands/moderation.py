@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from datetime import timedelta
-from utils import can_action_member, can_kick, can_ban,  can_mute, can_manage_message
+from utils import can_action_member, can_kick
 
 def mod_embed(title: str, description: str, color: deiscord.Color.orange()) -> discord.Embed:
   return discord.Embed(title=title, description=discription, color=color)
