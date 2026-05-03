@@ -25,6 +25,9 @@ bot = commands.Bot(command_prefix=get_prefix, intents=intents, help_command=None
 
 @bot.event
 async def on_ready():
+    if getattr(bot, '_ready_fired', False):
+        return 
+    bot._ready_fired = True 
     print(f"Logged in as {bot.user}", flush=True)
     print(f"Guilds: {[g.name for g in bot.guilds]}", flush=True)
     for guild in bot.guilds:
