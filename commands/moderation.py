@@ -15,7 +15,7 @@ class Moderation(commands.Cog):
   async def kick(self, ctx, member: discord.Member, *, reason: str = "No reson provided"):
     if not can_kick(ctx.author):
       return await ctx.send(embed=mod_embed("No permission", "you need a authority called **Kick members**."))
-    if member = ctx.author:
+    if member == ctx.author:
       return await ctx.send(embed=mod_embed("Error", "you cannot kick yourself baka ~~~"))
     if not can_action_kick(ctx.author, member):
       return await ctx.send(embed=mod_embed("Error", "you cannot kick someone equal oe higher authority")
