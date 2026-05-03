@@ -3,7 +3,9 @@ from discord.ext import commands
 from datetime import timedelta
 from utils import can_action_member, can_kick
 
-def mod_embed(title: str, discription: str, color: discord.Color.orange()) -> discord.Embed:
+def mod_embed(title: str, discription: str, color=None) -> discord.Embed:
+  if color is None:
+    color = discord.Color.red()
   return discord.Embed(title=title, discription=discription, color=color)
 
 class Moderation(commands.Cog):
