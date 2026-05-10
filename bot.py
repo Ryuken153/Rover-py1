@@ -35,6 +35,12 @@ async def on_ready():
         print(f"Registered guild: {guild.name}", flush=True)
 
 @bot.event
+async def on_member_join(member):
+    channel = discord.utils.get(member.guild.text_channels, name="general")
+    if channel:
+        await channel.send(f"Welcome to {member.guild.name}, {member.mention}! <:Groot_hi:1502971636448497674>")
+
+@bot.event
 async def on_guild_join(guild):
     await get_guild(guild.id)
     print(f"Joined guild: {guild.name} | ID: {guild.id}", flush=True)
